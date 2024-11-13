@@ -63,7 +63,7 @@ struct RecipeView: View {
                                 Text(recipe.name)
                                     .font(.headline)
                             }
-        
+                            
                             Text("Cuisine: \(recipe.cuisine)")
                                 .font(.subheadline)
                         }
@@ -79,10 +79,14 @@ struct RecipeView: View {
                             }
                             .buttonStyle(PlainButtonStyle())
                         }
-                            
+                        
                         
                     }
                     .padding(.vertical, 5)
+                }
+                .refreshable {
+                    // Fetch recipes when user pulls to refresh
+                    await recipes.fetchRecipes()
                 }
                 
             }

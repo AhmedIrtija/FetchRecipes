@@ -59,7 +59,7 @@ class Recipes: ObservableObject {
 
             let decoder = JSONDecoder()
             let decodedData = try decoder.decode(RecipeResponse.self, from: data)
-            self.recipeList = decodedData.recipes
+            self.recipeList = decodedData.recipes.shuffled()
             if decodedData.recipes.isEmpty {
                 self.errorMessage = "No recipes found."
             }
