@@ -8,7 +8,9 @@
 import Foundation
 import Combine
 
+
 // ObservableObject class to handle data fetching and storage
+@MainActor
 class Recipes: ObservableObject {
     @Published var recipeList: [Recipe] = []
     @Published var errorMessage: String?
@@ -37,7 +39,8 @@ class Recipes: ObservableObject {
         }
     }
 
-    func fetchRecipes() {
+    func fetchRecipes() async {
+        // URL for the JSON is here
         let urlString = "https://d3jbb8n5wk0qxi.cloudfront.net/recipes.json"
         guard let url = URL(string: urlString) else {
             print("Error: Invalid URL.")
@@ -45,32 +48,24 @@ class Recipes: ObservableObject {
             return
         }
 
-        URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
-            DispatchQueue.main.async {
-                if let error = error {
-                    print("Error: Failed to fetch data - \(error.localizedDescription)")
-                    self?.errorMessage = "Failed to fetch data: \(error.localizedDescription)"
-                    return
-                }
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
 
-                guard let data = data, !data.isEmpty else {
-                    print("Error: No data received or data is empty.")
-                    self?.errorMessage = "No data received."
-                    return
-                }
-
-                do {
-                    let decoder = JSONDecoder()
-                    let decodedData = try decoder.decode(RecipeResponse.self, from: data)
-                    self?.recipeList = decodedData.recipes
-                    if decodedData.recipes.isEmpty {
-                        self?.errorMessage = "No recipes found."
-                    }
-                } catch {
-                    print("Error: Failed to decode JSON - \(error.localizedDescription)")
-                    self?.errorMessage = "Failed to decode JSON: \(error.localizedDescription)"
-                }
+            guard !data.isEmpty else {
+                print("Error: No data received or data is empty.")
+                self.errorMessage = "No data received."
+                return
             }
-        }.resume()
+
+            let decoder = JSONDecoder()
+            let decodedData = try decoder.decode(RecipeResponse.self, from: data)
+            self.recipeList = decodedData.recipes
+            if decodedData.recipes.isEmpty {
+                self.errorMessage = "No recipes found."
+            }
+        } catch {
+            print("Error: Failed to fetch or decode data - \(error.localizedDescription)")
+            self.errorMessage = "Failed to fetch or decode data: \(error.localizedDescription)"
+        }
     }
 }

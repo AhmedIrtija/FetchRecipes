@@ -27,7 +27,9 @@ struct RecipeView: View {
                 }
 
                 Button("Fetch Recipes") {
-                    recipes.fetchRecipes()
+                    Task {
+                        await recipes.fetchRecipes()
+                    }
                 }
                 .padding()
             }
