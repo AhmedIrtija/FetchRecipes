@@ -52,8 +52,18 @@ struct RecipeView: View {
                         }
                         // Name and Cuisine
                         VStack(alignment: .leading) {
-                            Text(recipe.name)
-                                .font(.headline)
+                            if let sourceURL = recipe.sourceURL, let url = URL(string: sourceURL) {
+                                Link(destination: url) {
+                                    Text(recipe.name)
+                                        .font(.headline)
+                                }
+                                
+                            }
+                            else {
+                                Text(recipe.name)
+                                    .font(.headline)
+                            }
+        
                             Text("Cuisine: \(recipe.cuisine)")
                                 .font(.subheadline)
                         }
@@ -67,7 +77,9 @@ struct RecipeView: View {
                                     .frame(width: 30, height: 30)
                                     .foregroundColor(.orange)
                             }
+                            .buttonStyle(PlainButtonStyle())
                         }
+                            
                         
                     }
                     .padding(.vertical, 5)
@@ -84,6 +96,3 @@ struct RecipeView: View {
 }
 
 
-#Preview {
-    RecipeView()
-}
