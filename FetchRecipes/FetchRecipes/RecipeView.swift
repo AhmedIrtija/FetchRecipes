@@ -11,65 +11,75 @@ struct RecipeView: View {
     @StateObject private var recipes = Recipes()
     
     var body: some View {
-        VStack {
-            if let errorMessage = recipes.errorMessage {
-                Text("Error: \(errorMessage)")
-                    .foregroundColor(.red)
-            }
-            
-            List(recipes.recipeList) { recipe in
-                HStack {
-                    if let photoURLSmall = recipe.photoURLSmall, let url = URL(string: photoURLSmall) {
-                        AsyncImage(url: url) { phase in
-                            // Switch case for making sure image appears or has a default
-                            switch phase {
-                            case .empty:
-                                ProgressView() // Loading spinner while image loads
-                            case .success(let image):
-                                image
+        NavigationStack {
+            VStack {
+                if let errorMessage = recipes.errorMessage {
+                    Text("Error: \(errorMessage)")
+                        .foregroundColor(.red)
+                }
+                
+                List(recipes.recipeList) { recipe in
+                    HStack {
+                        if let photoURLSmall = recipe.photoURLSmall, let url = URL(string: photoURLSmall) {
+                            AsyncImage(url: url) { phase in
+                                // Switch case for making sure image appears or has a default
+                                switch phase {
+                                case .empty:
+                                    ProgressView() // Loading spinner while image loads to make it look nice
+                                case .success(let image):
+                                    image
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 50, height: 50) // Adjust size as needed
+                                        .cornerRadius(8)
+                                case .failure:
+                                    Image(systemName: "photo")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 50, height: 50)
+                                        .foregroundColor(.gray)
+                                @unknown default:
+                                    EmptyView()
+                                }
+                            }
+                            .id(recipe.uuid)
+                        } else {
+                            Image(systemName: "photo")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 50, height: 50)
+                                .foregroundColor(.gray)
+                        }
+                        // Name and Cuisine
+                        VStack(alignment: .leading) {
+                            Text(recipe.name)
+                                .font(.headline)
+                            Text("Cuisine: \(recipe.cuisine)")
+                                .font(.subheadline)
+                        }
+                        Spacer()
+                        
+                        // YouTube play button on the right side
+                        if let youtubeURL = recipe.youtubeURL, let url = URL(string: youtubeURL) {
+                            Link(destination: url) {
+                                Image(systemName: "play.circle")
                                     .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 50, height: 50) // Adjust size as needed
-                                    .cornerRadius(8)
-                            case .failure:
-                                Image(systemName: "photo")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 50, height: 50)
-                                    .foregroundColor(.gray)
-                            @unknown default:
-                                EmptyView()
+                                    .frame(width: 30, height: 30)
+                                    .foregroundColor(.orange)
                             }
                         }
-                    } else {
-                        Image(systemName: "photo")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 50, height: 50)
-                            .foregroundColor(.gray)
+                        
                     }
-                    // Name and Cuisine
-                    VStack(alignment: .leading) {
-                        Text(recipe.name)
-                            .font(.headline)
-                        Text("Cuisine: \(recipe.cuisine)")
-                            .font(.subheadline)
-                    }
+                    .padding(.vertical, 5)
                 }
-                .padding(.vertical, 5)
+                
             }
-            
-            Button("Fetch Recipes") {
-                Task {
-                    await recipes.fetchRecipes()
-                }
+            .task {
+                // Initial loading data when it appears
+                await recipes.fetchRecipes()
             }
-            .padding()
         }
-//        .task {
-//            // Initial loading data when it appears
-//            await recipes.fetchRecipes()
-//        }
+        
     }
 }
 
