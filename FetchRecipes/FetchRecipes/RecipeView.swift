@@ -41,6 +41,14 @@ struct RecipeView: View {
                 
                 // Sort picker
                 HStack {
+                    Image("Icon")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 30, height: 30)
+                        .cornerRadius(8)
+                        .padding()
+                    
+                    
                     Text("Recipes")
                         .foregroundColor(.orange)
                         .frame(alignment: .center)
