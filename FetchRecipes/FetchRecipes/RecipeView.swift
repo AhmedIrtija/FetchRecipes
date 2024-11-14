@@ -75,11 +75,32 @@ struct RecipeView: View {
                 
                 // Checking for error
                 if let errorMessage = recipes.errorMessage {
-                    Text("Error: \(errorMessage)")
-                        .foregroundColor(.red)
-                        .frame(alignment: .center)
-                        .padding()
+                    VStack {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 100, height: 100)
+                            .foregroundColor(.red)
+                            .padding(.bottom, 20)
+                        
+                        Text("Error")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .foregroundColor(.red)
+                            .padding(.bottom, 10)
+                        
+                        Text(errorMessage)
+                            .multilineTextAlignment(.center)
+                            .foregroundColor(.white)
+                            .font(.body)
+                            .padding(.horizontal, 30)
+                    }
+                    
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.black)
+                    .edgesIgnoringSafeArea(.all)
                 }
+
                 // Listing all the recipes
                 List(sortedRecipes) { recipe in
                     HStack {
