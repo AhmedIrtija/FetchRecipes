@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct RecipeView: View {
     @StateObject private var recipes = Recipes()
@@ -36,6 +37,8 @@ struct RecipeView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
+                
+                
                 // Sort picker
                 HStack {
                     Text("Recipes")
@@ -67,32 +70,17 @@ struct RecipeView: View {
                         .frame(alignment: .center)
                         .padding()
                 }
-                
                 List(sortedRecipes) { recipe in
                     HStack {
                         if let photoURLSmall = recipe.photoURLSmall, let url = URL(string: photoURLSmall) {
-                            AsyncImage(url: url) { phase in
-                                // Switch case for making sure image appears or has a default
-                                switch phase {
-                                case .empty:
-                                    ProgressView() // Loading spinner while image loads to make it look nice
-                                case .success(let image):
-                                    image
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 50, height: 50) // Adjust size as needed
-                                        .cornerRadius(8)
-                                case .failure:
-                                    Image(systemName: "photo")
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 50, height: 50)
-                                        .foregroundColor(.gray)
-                                @unknown default:
-                                    EmptyView()
+                            KFImage(url)
+                                .placeholder {
+                                    ProgressView() // Loading spinner while image loads
                                 }
-                            }
-                            .id(recipe.uuid)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 50, height: 50)
+                                .cornerRadius(8)
                         } else {
                             Image(systemName: "photo")
                                 .resizable()
