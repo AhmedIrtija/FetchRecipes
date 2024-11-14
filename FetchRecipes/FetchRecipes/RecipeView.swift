@@ -11,7 +11,10 @@ import Kingfisher
 struct RecipeView: View {
     @StateObject private var recipes = Recipes()
     @State private var selectedSortOption: SortOption = .none
+    //URL for JSON
+    @State private var JSONUrl: String = "https://d3jbb8n5wk0qxi.cloudfront.net/recipes.json"
     
+    // Sorting type
     enum SortOption: String, CaseIterable, Identifiable {
         case none = "None"
         case nameAZ = "Name A-Z"
@@ -38,16 +41,13 @@ struct RecipeView: View {
         NavigationStack {
             VStack(spacing: 0) {
                 
-                
-                // Sort picker
                 HStack {
                     Image("Icon")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 30, height: 30)
                         .cornerRadius(8)
-                        .padding()
-                    
+                        .padding(.leading)
                     
                     Text("Recipes")
                         .foregroundColor(.orange)
@@ -57,6 +57,7 @@ struct RecipeView: View {
                         .bold()
                     
                     Spacer()
+                    // Sort picker
                     Menu {
                         Picker("Sort By", selection: $selectedSortOption) {
                             ForEach(SortOption.allCases) { option in
@@ -72,12 +73,14 @@ struct RecipeView: View {
                     .padding()
                 }
                 
+                // Checking for error
                 if let errorMessage = recipes.errorMessage {
                     Text("Error: \(errorMessage)")
                         .foregroundColor(.red)
                         .frame(alignment: .center)
                         .padding()
                 }
+                // Listing all the recipes
                 List(sortedRecipes) { recipe in
                     HStack {
                         if let photoURLSmall = recipe.photoURLSmall, let url = URL(string: photoURLSmall) {
@@ -90,6 +93,7 @@ struct RecipeView: View {
                                 .frame(width: 50, height: 50)
                                 .cornerRadius(8)
                         } else {
+                            // Default Image
                             Image(systemName: "photo")
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
@@ -98,6 +102,7 @@ struct RecipeView: View {
                         }
                         // Name and Cuisine
                         VStack(alignment: .leading) {
+                            // Link to each recipes source
                             if let sourceURL = recipe.sourceURL, let url = URL(string: sourceURL) {
                                 Link(destination: url) {
                                     Text(recipe.name)
@@ -134,12 +139,12 @@ struct RecipeView: View {
                 }
                 .refreshable {
                     // Fetch recipes when user pulls to refresh
-                    await recipes.fetchRecipes()
+                    await recipes.fetchRecipes(urlString: JSONUrl)
                 }
             }
             .task {
                 // Initial loading data when it appears
-                await recipes.fetchRecipes()
+                await recipes.fetchRecipes(urlString: JSONUrl)
             }
             .background(Color.white)
         }

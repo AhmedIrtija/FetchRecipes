@@ -39,9 +39,8 @@ class Recipes: ObservableObject {
         }
     }
 
-    func fetchRecipes() async {
-        // URL for the JSON is here
-        let urlString = "https://d3jbb8n5wk0qxi.cloudfront.net/recipes.json"
+    func fetchRecipes(urlString: String) async {
+        // URL check
         guard let url = URL(string: urlString) else {
             print("Error: Invalid URL.")
             self.errorMessage = "Invalid URL."
