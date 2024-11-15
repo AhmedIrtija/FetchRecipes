@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Combine
 
 
 // ObservableObject class to handle data fetching and storage
@@ -14,11 +13,11 @@ import Combine
 class Recipes: ObservableObject {
     @Published var recipeList: [Recipe] = []
     @Published var errorMessage: String?
-
+    
     struct RecipeResponse: Codable {
         let recipes: [Recipe]
     }
-
+    
     struct Recipe: Codable, Identifiable {
         let id = UUID() // For SwiftUI List rendering
         let cuisine: String
@@ -38,7 +37,7 @@ class Recipes: ObservableObject {
             case youtubeURL = "youtube_url"
         }
     }
-
+    
     func fetchRecipes(urlString: String) async {
         // URL check
         guard let url = URL(string: urlString) else {
@@ -46,16 +45,16 @@ class Recipes: ObservableObject {
             self.errorMessage = "Invalid URL."
             return
         }
-
+        
         do {
             let (data, _) = try await URLSession.shared.data(from: url)
-
+            
             guard !data.isEmpty else {
                 print("Error: No data received or data is empty.")
                 self.errorMessage = "No data received."
                 return
             }
-
+            
             let decoder = JSONDecoder()
             let decodedData = try decoder.decode(RecipeResponse.self, from: data)
             self.recipeList = decodedData.recipes.shuffled()

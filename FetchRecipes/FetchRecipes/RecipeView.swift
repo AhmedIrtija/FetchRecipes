@@ -11,6 +11,7 @@ import Kingfisher
 struct RecipeView: View {
     @StateObject private var recipes = Recipes()
     @State private var selectedSortOption: SortOption = .none
+    
     //URL for JSON
     @State private var JSONUrl: String = "https://d3jbb8n5wk0qxi.cloudfront.net/recipes.json"
     
@@ -100,7 +101,7 @@ struct RecipeView: View {
                     .background(Color.black)
                     .edgesIgnoringSafeArea(.all)
                 }
-
+                
                 // Listing all the recipes
                 List(sortedRecipes) { recipe in
                     HStack {

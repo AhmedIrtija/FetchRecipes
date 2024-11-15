@@ -11,7 +11,7 @@ import XCTest
 @MainActor
 final class FetchRecipesTests: XCTestCase {
     @Published var recipes = Recipes()
-
+    
     // test correct url
     func testCorrectURL() async {
         // Arrange
@@ -72,5 +72,5 @@ final class FetchRecipesTests: XCTestCase {
         XCTAssertTrue(recipes.recipeList.isEmpty)
     }
     
-
+    
 }
